@@ -75,9 +75,9 @@ Out of the box, Tallify includes, but is not limited to:
 
 This is an exaustive list of add-ons we feel you might be using in your Tall Stack project but some of them you might not want. Go to the [Configuration](#Configuration) section to understand more about adding or removing some of those default packages
 
-#### The `park` command
-
 ---
+
+#### The `park` command
 
 The `park` command registers a directory on your machine that contains your Laravel applications. Once the directory has been "parked" with Valet, all of the directories within that directory will be accessible for Tallify to `tallify` your applications. 
 
@@ -89,9 +89,9 @@ tallify park
 
 And voila! Now you can `tallify` any of the fresh Laravel application you want to. Tallify will add its default files and setup in order for you to get cracking as fast as possible.
 
-#### The `parked` command
-
 ---
+
+#### The `parked` command
 
 If you are unsure to wether you did use the `tallify park` command, if you struggle remembering where you actually 'parked' Tallify, or if you know you 'parked' Tallify in the wrong place, use the `parked` command to see what is stored withing the Tallify configuration file.
 
@@ -134,6 +134,8 @@ tallify package:add moment --npm
 
 This will add any given packages (provided it exists) to your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-packagelist-command) command.
 
+---
+
 #### The `package:remove` command
 
 Exactly like you can add packages to your default Tallify configuration, you can remove packages. If you don't need one of the default packages or if you added a package in the past that is no longer need, use the `package:remove` command to take it off the default Tallify configuration file. It works exactly like the [`package:add`](#The-packageadd-command) command (including its arguments).
@@ -157,6 +159,8 @@ tallify package:remove moment --npm
 
 This will remove any packages from your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-packagelist-command) command.
 
+---
+
 #### The `package:list` command
 
 In order to check what are the Tallify default packages or the packages you might have added in the past, feel free to use the `package:list` command. This command has optional arguments `--composer`, `--npm`, and `--dev` to tell Tallify what package list you'd like to see. This will output an array of packages included in your Tallify configuration file.
@@ -178,11 +182,31 @@ tallify package:list --composer --dev
 tallify package:list --npm
 ```
 
+---
+
 #### The `stub:add` command
+
+To be written
+
+
+
+---
 
 #### The `stub:remove` command
 
+To be written
+
+
+
+---
+
 #### The `stub:list` command
+
+To be written
+
+
+
+---
 
 #### The `config:reset` command
 
