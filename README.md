@@ -1,6 +1,12 @@
 <p align="center"><img src="/art/tall.svg"></p>
 
-
+```
+<h1 align="center" style="border:none !important">
+    <code>Tallify</code>
+    <br>
+    <br>
+</h1>
+```
 
 ### Introduction
 
