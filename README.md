@@ -14,20 +14,20 @@ We know that everyone's bootstrap setup is different so we tried to make this as
 
 Here's a brief look at each command in this repo:
 
-| Command                                       | Description                                                  |
-| --------------------------------------------- | ------------------------------------------------------------ |
-| [install](#Installation)                      | Install the Tallify services                                 |
-| [park](#The-park-command)                     | Tells tallify where all your Laravel applications lives to be able to "Tallify" them. |
-| [parked](#The-parked-command)                 | Shows the directory where all your Laravel applivations live. |
-| [package:add](#The-package:add-command)       | Add custom packages to your tallify configuration file.      |
-| [package:remove](#The-package:remove-command) | Remove custom packages to your tallify configuration file.   |
-| [package:list](#The-package:list-command)     | List all packages.                                           |
-| [stub:add](#The-stub:add-command)             | Add custom stubs to your tallify configuration file.         |
-| [stub:remove](#The-stub:remove-command)       | Remove custom stubs to your tallify configuration file.      |
-| [stub:list](#The-stub-command)                | List all stubs.                                              |
-| [config:reset](#The-config:reset-command)     | Reset the tallify configuration file to its default state.   |
-| [config:publish](#The-config:publish-command) | Publish the tallify configuration and files for personal customization. |
-| [build](#The-build-command)                   | Tallify a given Laravel application.                         |
+| Command                                      | Description                                                  |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| [install](#Installation)                     | Install the Tallify services                                 |
+| [park](#The-park-command)                    | Tells tallify where all your Laravel applications lives to be able to "Tallify" them. |
+| [parked](#The-parked-command)                | Shows the directory where all your Laravel applivations live. |
+| [package:add](#The-packageadd-command)       | Add custom packages to your tallify configuration file.      |
+| [package:remove](#The-packageremove-command) | Remove custom packages to your tallify configuration file.   |
+| [package:list](#The-packagelist-command)     | List all packages.                                           |
+| [stub:add](#The-stubadd-command)             | Add custom stubs to your tallify configuration file.         |
+| [stub:remove](#The-stubremove-command)       | Remove custom stubs to your tallify configuration file.      |
+| [stub:list](#The-stub-command)               | List all stubs.                                              |
+| [config:reset](#The-configreset-command)     | Reset the tallify configuration file to its default state.   |
+| [config:publish](#The-configpublish-command) | Publish the tallify configuration and files for personal customization. |
+| [build](#The-build-command)                  | Tallify a given Laravel application.                         |
 
 
 
@@ -132,11 +132,11 @@ tallify package:add laravel/breeze --composer --dev
 tallify package:add moment --npm
 ```
 
-This will add any given packages (provided it exists) to your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-package:list-command) command.
+This will add any given packages (provided it exists) to your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-packagelist-command) command.
 
 ##### The `package:remove` command
 
-Exactly like you can add packages to your default Tallify configuration, you can remove packages. If you don't need one of the default packages or if you added a package in the past that is no longer need, use the `package:remove` command to take it off the default Tallify configuration file. It works exactly like the [`package:add`](#The-package:add-command) command (including its arguments).
+Exactly like you can add packages to your default Tallify configuration, you can remove packages. If you don't need one of the default packages or if you added a package in the past that is no longer need, use the `package:remove` command to take it off the default Tallify configuration file. It works exactly like the [`package:add`](#The-packageadd-command) command (including its arguments).
 
 Type `--composer` to remove composer packages
 
@@ -155,7 +155,7 @@ tallify package:remove laravel/breeze --composer --dev
 tallify package:remove moment --npm
 ```
 
-This will remove any packages from your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-package:list-command) command.
+This will remove any packages from your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-packagelist-command) command.
 
 ##### The `package:list` command
 
@@ -245,7 +245,7 @@ You can now add or remove stub files as you please.
 
 **Bear in mind that if you add your own stub files, you need to tell Tallify about them!**
 
-To do so, you can either use the [`stub:add`](#The-stub:add-command) command <u>or</u> add the manually from your code editor within the `stubs` object in the `config.json` file. The `key` is the name of the stub file and the `value` represents the path to where in your Laravel application you want to add it.
+To do so, you can either use the [`stub:add`](#The-stubadd-command) command <u>or</u> add the manually from your code editor within the `stubs` object in the `config.json` file. The `key` is the name of the stub file and the `value` represents the path to where in your Laravel application you want to add it.
 
 ##### <u>Here is an example:</u>
 
@@ -257,7 +257,7 @@ tallify config:publish ~/Code/Config
 // creates a tallify directory at ~/Code/Config
 ```
 
-Then we should add the `laravel-mix` package to the list of `npm` packages using the [`package:add`](#The-package:add-command) command.
+Then we should add the `laravel-mix` package to the list of `npm` packages using the [`package:add`](#The-packageadd-command) command.
 
 ```bash
 tallify package:add laravel-mix --npm
@@ -271,7 +271,7 @@ touch ~/Code/Config/tallify/stubs/webpack.mix.js
 
 We edit the `webpack.mix.js` to our own taste until it is ready. Once ready, we now have to add it to the Tallify `stubs` array.
 
-Using the [`stub:add`](#The-stub:add-command) command:
+Using the [`stub:add`](#The-stubadd-command) command:
 
 ```
 tallify stub:add webpack.mix.js /
@@ -290,7 +290,7 @@ Using a code editor of your choice to edit the `config.json` file
 }
 ```
 
-That is it. Now when we use the Tallify [`build`](#The-build- command) command. Laravel mix will be installed as a `npm` dependency and our `webpack.mix.js` stub will be copied to its defined location *(Laravel project root folder in this case)*.
+That is it. Now when we use the Tallify [`build`](#The-build-command) command. Laravel mix will be installed as a `npm` dependency and our `webpack.mix.js` stub will be copied to its defined location *(Laravel project root folder in this case)*.
 
 
 
