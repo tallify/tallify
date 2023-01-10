@@ -2,7 +2,7 @@
 
 
 
-#### Introduction
+### Introduction
 
 ---
 
@@ -32,7 +32,7 @@ Here's a brief look at each command in this repo:
 
 
 
-#### Installation
+### Installation
 
 ---
 
@@ -75,7 +75,7 @@ Out of the box, Tallify includes, but is not limited to:
 
 This is an exaustive list of add-ons we feel you might be using in your Tall Stack project but some of them you might not want. Go to the [Configuration](#Configuration) section to understand more about adding or removing some of those default packages
 
-##### The `park` command
+#### The `park` command
 
 ---
 
@@ -89,7 +89,7 @@ tallify park
 
 And voila! Now you can `tallify` any of the fresh Laravel application you want to. Tallify will add its default files and setup in order for you to get cracking as fast as possible.
 
-##### The `parked` command
+#### The `parked` command
 
 ---
 
@@ -105,13 +105,13 @@ This will output the path to the directory on your machine that should contains 
 
 
 
-#### Configuration
+### Configuration
 
 ---
 
 For small tweaks or customisation of your default Tallify setup, we profived helpers command so you can easily change the default config file to suits your need. For a more substantial customisation, go to the [Customisation](#Customisation) section.
 
-##### The `package:add` command
+#### The `package:add` command
 
 Some of you might want to add specific packages to the default configuration so that every new 'tallified' installation comes ship with it. To do so, simply add and **existing** package to the default configuration file by using the `package:add` command. This command has optional arguments `--composer`, `--npm`, and `--dev` to tell Tallify what of package you might be adding. Please ensure you tell Tallify wether it is an `npm` or a `composer` package by adding the optional commands available: 
 
@@ -134,7 +134,7 @@ tallify package:add moment --npm
 
 This will add any given packages (provided it exists) to your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-packagelist-command) command.
 
-##### The `package:remove` command
+#### The `package:remove` command
 
 Exactly like you can add packages to your default Tallify configuration, you can remove packages. If you don't need one of the default packages or if you added a package in the past that is no longer need, use the `package:remove` command to take it off the default Tallify configuration file. It works exactly like the [`package:add`](#The-packageadd-command) command (including its arguments).
 
@@ -157,7 +157,7 @@ tallify package:remove moment --npm
 
 This will remove any packages from your default Tallify configuration file. If you don't know or don't remember the list of packages you potentially added in the past, checkout the [`package:list`](#The-packagelist-command) command.
 
-##### The `package:list` command
+#### The `package:list` command
 
 In order to check what are the Tallify default packages or the packages you might have added in the past, feel free to use the `package:list` command. This command has optional arguments `--composer`, `--npm`, and `--dev` to tell Tallify what package list you'd like to see. This will output an array of packages included in your Tallify configuration file.
 
@@ -178,13 +178,13 @@ tallify package:list --composer --dev
 tallify package:list --npm
 ```
 
-##### The `stub:add` command
+#### The `stub:add` command
 
-##### The `stub:remove` command
+#### The `stub:remove` command
 
-##### The `stub:list` command
+#### The `stub:list` command
 
-##### The `config:reset` command
+#### The `config:reset` command
 
 If things go south, or if you simply want to start from fresh, you can use the `config:reset` command. This will erase your current Tallify configuration file and recreate a fresh default Tallify configuration file. Careful as this commands will delete any modifications you previously made to the default configuration file.
 
@@ -194,13 +194,13 @@ tallify config:reset
 
 
 
-#### Tallifying
+### Tallifying
 
 ---
 
 You have everything setup to be able to 'tallify' a fresh Laravel application. Let's 'tallify'.
 
-##### The `build` command
+#### The `build` command
 
 ```bash
 tallify build my-project
@@ -208,7 +208,7 @@ tallify build my-project
 
 
 
-#### Customisation
+### Customisation
 
 ---
 
@@ -247,7 +247,7 @@ You can now add or remove stub files as you please.
 
 To do so, you can either use the [`stub:add`](#The-stubadd-command) command <u>or</u> add the manually from your code editor within the `stubs` object in the `config.json` file. The `key` is the name of the stub file and the `value` represents the path to where in your Laravel application you want to add it.
 
-##### <u>Here is an example:</u>
+#### <u>Here is an example:</u>
 
 Let say we want to use `laravel-mix`. The first step is to publish the Tallify files to a specific path on our machine.
 
@@ -294,7 +294,7 @@ That is it. Now when we use the Tallify [`build`](#The-build-command) command. L
 
 
 
-#### Uninstallation
+### Uninstallation
 
 ---
 
