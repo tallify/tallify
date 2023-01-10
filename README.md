@@ -17,7 +17,7 @@ Here's a brief look at each command in this repo:
 | Command                                       | Description                                                  |
 | --------------------------------------------- | ------------------------------------------------------------ |
 | [install](#Installation)                      | Install the Tallify services                                 |
-| [park](#The park command)                     | Tells tallify where all your Laravel applications lives to be able to "Tallify" them. |
+| [park](#the-park-command)                     | Tells tallify where all your Laravel applications lives to be able to "Tallify" them. |
 | [parked](#The parked command)                 | Shows the directory where all your Laravel applivations live. |
 | [package:add](#The package:add command)       | Add custom packages to your tallify configuration file.      |
 | [package:remove](#The package:remove command) | Remove custom packages to your tallify configuration file.   |
