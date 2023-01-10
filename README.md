@@ -14,20 +14,20 @@ We know that everyone's bootstrap setup is different so we tried to make this as
 
 Here's a brief look at each command in this repo:
 
-| Command                                         | Description                                                  |
-| ----------------------------------------------- | ------------------------------------------------------------ |
-| [install](#Installation)                        | Install the Tallify services                                 |
-| [park](#The `park` command)                     | Tells tallify where all your Laravel applications lives to be able to "Tallify" them. |
-| [parked](#The `parked` command)                 | Shows the directory where all your Laravel applivations live. |
-| [package:add](#The `package:add` command)       | Add custom packages to your tallify configuration file.      |
-| [package:remove](#The `package:remove` command) | Remove custom packages to your tallify configuration file.   |
-| [package:list](#The `package:list` command)     | List all packages.                                           |
-| [stub:add](#The `stub:add` command)             | Add custom stubs to your tallify configuration file.         |
-| [stub:remove](#The `stub:remove` command)       | Remove custom stubs to your tallify configuration file.      |
-| [stub:list](#The `stub` command)                | List all stubs.                                              |
-| [config:reset](#The `config:reset` command)     | Reset the tallify configuration file to its default state.   |
-| [config:publish](#The `config:publish` command) | Publish the tallify configuration and files for personal customization. |
-| [build](#The `build` command)                   | Tallify a given Laravel application.                         |
+| Command                                       | Description                                                  |
+| --------------------------------------------- | ------------------------------------------------------------ |
+| [install](#Installation)                      | Install the Tallify services                                 |
+| [park](#The park command)                     | Tells tallify where all your Laravel applications lives to be able to "Tallify" them. |
+| [parked](#The parked command)                 | Shows the directory where all your Laravel applivations live. |
+| [package:add](#The package:add command)       | Add custom packages to your tallify configuration file.      |
+| [package:remove](#The package:remove command) | Remove custom packages to your tallify configuration file.   |
+| [package:list](#The package:list command)     | List all packages.                                           |
+| [stub:add](#The stub:add command)             | Add custom stubs to your tallify configuration file.         |
+| [stub:remove](#The stub:remove command)       | Remove custom stubs to your tallify configuration file.      |
+| [stub:list](#The stub command)                | List all stubs.                                              |
+| [config:reset](#The config:reset command)     | Reset the tallify configuration file to its default state.   |
+| [config:publish](#The config:publish command) | Publish the tallify configuration and files for personal customization. |
+| [build](#The build command)                   | Tallify a given Laravel application.                         |
 
 
 
