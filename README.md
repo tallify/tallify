@@ -75,7 +75,7 @@ Out of the box, Tallify includes, but is not limited to:
 
 This is an exaustive list of add-ons we feel you might be using in your Tall Stack project but some of them you might not want. Go to the [Configuration](#Configuration) section to understand more about adding or removing some of those default packages
 
-##### The park command
+##### The `park` command
 
 ---
 

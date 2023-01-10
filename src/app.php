@@ -20,7 +20,7 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 /**
  * Create the application.
  */
-$version = '0.1.4';
+$version = '0.1.5';
 
 $app = new Application('Tallify installer', $version);
 
