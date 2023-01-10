@@ -1,0 +1,47 @@
+{
+    "name": "tallify/installer",
+    "description": "The Laravel application Tallifyer installer.",
+    "keywords": [
+        "tall stack",
+        "laravel",
+        "livewire",
+        "alpinejs"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eliott Champault",
+            "email": "eliott@champau.lt"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "mnapoli/silly": "^1.0",
+        "symfony/var-dumper": "^6.0",
+        "nunomaduro/termwind": "^1.0",
+        "symfony/console": "^4.0|^5.0|^6.0",
+        "symfony/process": "^4.2|^5.0|^6.0",
+        "tightenco/collect": "^5.3|^6.0|^7.0|^8.0",
+        "illuminate/container": "~5.1|^6.0|^7.0|^8.0|^9.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0|^9.3"
+    },
+    "bin": [
+        "bin/tallify"
+    ],
+    "autoload": {
+        "files": [
+            "src/includes/facades.php",
+            "src/includes/helpers.php"
+        ],
+        "psr-4": {
+            "Tallify\\": "src/Tallify/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+SOURCE="${BASH_SOURCE[0]}"
+
+DIR=$(pwd)
+
+if [[ "$EUID" -ne 0 ]]
+then
+    sudo USER="$USER" --preserve-env "$SOURCE" "$@"
+    exit
+fi
+
+php "$DIR/src/tallify.php" "$@"
