@@ -336,7 +336,9 @@ class Configuration
         $key = 'stubs';
         $config = $this->readConfig();
 
-        $config[$key][$stubName] = removeLeadingSlash(removeTrailingSlash($stubPath));
+        $sanitisedPath = $stubPath === "/" ? $stubPath : removeLeadingSlash(removeTrailingSlash($stubPath));
+
+        $config[$key][$stubName] = $sanitisedPath;
 
         $this->write($config);
     }

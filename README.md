@@ -325,7 +325,7 @@ Using a code editor of your choice to edit the `config.json` file
   "stubs": {
         // [... Omitted code],
     		"name/of/the/stub": "path/in/laravel/project"
-    		"webpack.mix.js": "" // my-project root folder
+    		"webpack.mix.js": "/"
     },
 }
 ```
