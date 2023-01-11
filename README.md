@@ -334,6 +334,22 @@ Using a code editor of your choice to edit the `config.json` file
 
 
 
+### Tallify directory & files
+
+---
+
+Here are where the Tallify default files are situated in your computer.
+
+`~/.config/tallify`
+
+Contains all of Tallify's configuration. If things go south, you can always use the [`config:reset`](#The-configreset-command) command to restore it to its default state. 
+
+`/.config/tallify/stubs`
+
+Contains all of Tallify's default stubs. You may wish to maintain a backup of this directory.
+
+
+
 ### Uninstallation
 
 ---
