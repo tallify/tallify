@@ -91,3 +91,15 @@ function removeTrailingSlash($string)
 
     return $string;
 }
+
+/**
+ * Remove any trailing slash if any.
+ */
+function removeLeadingSlash($string)
+{
+    if ($string[0] == '/') {
+        $string = substr($string, 1);
+    }
+
+    return $string;
+}

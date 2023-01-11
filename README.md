@@ -51,7 +51,7 @@ After adding Tallify to your global composer packages, execute Tallify's install
 tallify install
 ```
 
-Tallify is now installed but it can't work it's magic yet! In order for Tallify to add it's default `Tall Stack` flavours to any fresh `Laravel` application, you will need to tell Tallify where you keep all your Laravel applications.
+⚠️ Tallify is now installed but it can't work it's magic yet! In order for Tallify to add it's default `Tall Stack` flavours to any fresh `Laravel` application, you will need to tell Tallify where you keep all your Laravel applications.
 
 Out of the box, Tallify includes, but is not limited to:
 
@@ -88,7 +88,7 @@ cd ~/Code/Laravel
 tallify park
 ```
 
-And voila! Now you can `tallify` any of the fresh Laravel application you want to. Tallify will add its default files and setup in order for you to get cracking as fast as possible.
+🔥 And voila! Now you can `tallify` any of the fresh Laravel application you want to. Tallify will add its default files and setup in order for you to get cracking as fast as possible.
 
 ---
 
@@ -102,7 +102,7 @@ tallify parked
 
 This will output the path to the directory on your machine that should contains your Laravel applications.
 
-**After you successfully parked your Laravel applications directory, Tallify will be completely installed and ready to be used to 'tallify' any new Laravel application.**
+🔥 **After you successfully parked your Laravel applications directory, Tallify will be completely installed and ready to be used to 'tallify' any new Laravel application.**
 
 
 
@@ -187,25 +187,40 @@ tallify package:list --npm
 
 #### The `stub:add` command
 
-To be written
+Like with the [`package:add`](#The-packageadd-command), you might want to provide new default stubs so that the can get copied to your fresh Laravel application. The `stub:add` command will add a "stub-name": "stub-path" to the default "stubs" array within your default Tallify configuration file. The `stub:add` takes two arguments: `stub-name` and `stub-path`. 
 
+```bash
+// Add stub to default configuration file
+// tallify stub:add stub-name stub-path
+tallify stub:add webpack.mix.js /
+```
 
+The above code tell Tallify that, *as part of the default tallifying process*, you want to copy the `webpack.mix.js` stub file to the `root` folder of our fresh Laravel application.
+
+⚠️ **If you don't actually create a stub with the specified `stub-name` in the stubs config folder, the tallify process will end up having an error.**
 
 ---
 
 #### The `stub:remove` command
 
-To be written
+Exactly like you can add stubs to your default Tallify configuration, you can remove stubs. If you don't need one of the default stubs or if you added a stub in the past that is no longer need, use the `stub:remove` command to take it off the default Tallify configuration file. 
 
+⚠️ The `stub:command` **differs** from the [`stub:add`](#The-stubadd-command) command as it only takes **one argument** `stub-name`.
 
+```bash
+// Remove stub to default configuration file
+tallify stub:remove webpack.mix.js
+```
 
 ---
 
 #### The `stub:list` command
 
-To be written
+In order to check what are the Tallify default stubs or the custom stubs you might have added in the past, feel free to use the `stub:list` command. This will output an array of stubs included in your Tallify configuration file.
 
-
+```bash
+tallify stub:list
+```
 
 ---
 
@@ -268,7 +283,7 @@ tallify
 
 You can now add or remove stub files as you please. 
 
-**Bear in mind that if you add your own stub files, you need to tell Tallify about them!**
+⚠️ **Bear in mind that if you add your own stub files, you need to tell Tallify about them!**
 
 To do so, you can either use the [`stub:add`](#The-stubadd-command) command <u>or</u> add the manually from your code editor within the `stubs` object in the `config.json` file. The `key` is the name of the stub file and the `value` represents the path to where in your Laravel application you want to add it.
 
@@ -315,7 +330,7 @@ Using a code editor of your choice to edit the `config.json` file
 }
 ```
 
-That is it. Now when we use the Tallify [`build`](#The-build-command) command. Laravel mix will be installed as a `npm` dependency and our `webpack.mix.js` stub will be copied to its defined location *(Laravel project root folder in this case)*.
+🔥 That is it. Now when we use the Tallify [`build`](#The-build-command) command. Laravel mix will be installed as a `npm` dependency and our `webpack.mix.js` stub will be copied to its defined location *(Laravel project root folder in this case)*.
 
 
 

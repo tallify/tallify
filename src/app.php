@@ -20,7 +20,7 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 /**
  * Create the application.
  */
-$version = '0.1.12';
+$version = '0.1.13';
 
 $app = new Application('Tallify installer', $version);
 
@@ -310,6 +310,64 @@ if (is_dir(TALLIFY_HOME_PATH)) {
         '--dev'             => 'List all composer --dev default packages.',
     ]);
 
+    /**
+     * Add a stub to the list of default stubs to install.
+     */
+    $app->command('stub:add stub-name stub-path', function ($stubName, $stubPath) {
+        if (Configuration::checkIfStubIsInConfigurationFile($stubName, $stubPath)) {
+            return render("
+                <div class='mb-1'>
+                    <div class='px-1 text-white bg-orange-600'>WARNING!</div>
+                    <em class='ml-1'>
+                        $stubName already is in your tallify configuration file.
+                    </em>
+                </div>
+            ");
+        }
+
+        Configuration::addStub($stubName);
+
+        return render("
+            <div class='mb-1'>
+                <div class='px-1 text-white bg-green-600'>SUCCESS!</div>
+                <em class='ml-1'>
+                    $stubName has been successfully added to your default tstubs.
+                </em>
+            </div>
+        ");
+    })->descriptions('Add custom stubs to your tallify configuration file.', [
+        'stub-name'       => 'Name of the stub file you would like to add to your tallify config.',
+        'stub-path'       => 'Path withing your Laravel application you want this stub to be copied.',
+    ]);
+
+    /**
+     * Remove a stub to the list of default stubs to install.
+     */
+    $app->command('stub:remove stub-name', function ($stubName) {
+        if (!Configuration::checkIfStubIsInConfigurationFile($stubName)) {
+            return render("
+                <div class='mb-1'>
+                    <div class='px-1 text-white bg-orange-600'>WARNING!</div>
+                    <em class='ml-1'>
+                        It looks like $stubName was <span class='font-bold underline'>NOT</span> in your tallify configuration file.
+                    </em>
+                </div>
+            ");
+        }
+
+        Configuration::removeStub($stubName);
+
+        return render("
+            <div class='mb-1'>
+                <div class='px-1 text-white bg-green-600'>SUCCESS!</div>
+                <em class='ml-1'>
+                    $stubName has been successfully removed to your default stubs.
+                </em>
+            </div>
+        ");
+    })->descriptions('Remove custom stubs to your tallify configuration file.', [
+        'stub-name'       => 'Name of the stub file you would like to remove to your tallify config.',
+    ]);
     /**
      * List all default stubs.
      */

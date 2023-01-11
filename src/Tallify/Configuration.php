@@ -97,10 +97,10 @@ class Configuration
                 'laravel-repositories-path'                => "",
                 'tallify-custom-config'             => false,
                 'tallify-custom-config-path'        => "",
-                'composer-dependenciez'                 => [
+                'composer-dependencies'                 => [
                     'livewire/livewire',
                 ],
-                'composer-dev-dependecies'     => [
+                'composer-dev-dependencies'     => [
                     "pestphp/pest-plugin-parallel",
                     "pestphp/pest-plugin-livewire",
                     "barryvdh/laravel-ide-helper",
@@ -131,12 +131,12 @@ class Configuration
                 'stubs'                   => [
                     // "stub file"              => "path/to/install/file"
                     "AppServiceProvider.php"    => "app/Providers",
-                    "tailwind.config.js"        => "/",
-                    "postcss.config.js"         => "/",
-                    "vite.config.js"            => "/",
+                    "tailwind.config.js"        => "",
+                    "postcss.config.js"         => "",
+                    "vite.config.js"            => "",
                     "app.blade.php"             => "resources/layouts",
                     "AppLayout.php"             => "app/Views/Components",
-                    "phpstan.neon"              => "/",
+                    "phpstan.neon"              => "",
                     "tailwind.css"              => "resources/css/libraries",
                     "livewire.js"               => "resources/js",
                     "alpine.css"                => "resources/css/libraries",
@@ -258,19 +258,20 @@ class Configuration
         return false;
     }
 
+    /**
+     * Displays default composer or npm packages from the tallify configuration file.
+     *
+     * @param string $library
+     * @param string $dev
+     *
+     * @return array
+     */
     public function displayDefaultPackagesFor($library, $dev)
     {
-        $key = $library == 'npm' ? 'npm-packages' : ($dev ? 'composer-development-packages' : 'composer-packages');
+        $key = $library == 'npm' ? 'npm-dependencies' : ($dev ? 'composer-dev-dependencies' : 'composer-dependencies');
         $config = $this->readConfig();
 
         return $config[$key];
-    }
-
-    public function displayDefaultStubs()
-    {
-        $config = $this->readConfig();
-
-        return $config['stubs'];
     }
 
     /**
@@ -278,7 +279,7 @@ class Configuration
      *
      * @param string $library
      * @param string $packageName
-     * * @param string $dev
+     * @param string $dev
      *
      * @return boolean
      */
@@ -320,6 +321,68 @@ class Configuration
         }
 
         return false;
+    }
+
+    /**
+     * Add a stub to the default Tallify configuration file.
+     *
+     * @param string $stubName
+     * @param string $stubPath
+     *
+     * @return void
+     */
+    public function addStub($stubName, $stubPath)
+    {
+        $key = 'stubs';
+        $config = $this->readConfig();
+
+        $config[$key][$stubName] = removeLeadingSlash(removeTrailingSlash($stubPath));
+
+        $this->write($config);
+    }
+
+    /**
+     * Remove a stub to the default Tallify configuration file.
+     *
+     * @param string $stubName
+     *
+     * @return void
+     */
+    public function removeStub($stubName)
+    {
+        $key = 'stubs';
+        $config = $this->readConfig();
+
+        unset($config[$key][$stubName]);
+
+        $this->write($config);
+    }
+
+    /**
+     * Check if stub already is in the tallify configuration file.
+     *
+     * @param string $stubName
+     *
+     * @return boolean
+     */
+    public function checkIfStubIsInConfigurationFile($stubName)
+    {
+        $key = 'stubs';
+        $config = $this->readConfig();
+
+        return array_key_exists($stubName, $config[$key]);
+    }
+
+    /**
+     * Displays default stubs from the tallify configuration file.
+     *
+     * @return array
+     */
+    public function displayDefaultStubs()
+    {
+        $config = $this->readConfig();
+
+        return $config['stubs'];
     }
 
     /**
