@@ -4,6 +4,7 @@ namespace Tallify;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
 class Filesystem
 {
@@ -28,6 +29,20 @@ class Filesystem
     public function copy($from, $to)
     {
         copy($from, $to);
+    }
+
+    /**
+     * Copy the given file to a new location for the non-root user.
+     *
+     * @param  string  $from
+     * @param  string  $to
+     * @return void
+     */
+    public function copyAsUser($from, $to)
+    {
+        copy($from, $to);
+
+        $this->chown($to, user());
     }
 
     /**
@@ -93,6 +108,36 @@ class Filesystem
         $path = file_exists($custom) ? $custom : $default;
 
         return $this->get($path);
+    }
+
+    /**
+     * Copy the given folder to a new location.
+     *
+     * @param  string  $from
+     * @param  string  $to
+     * @return void
+     */
+    public function mirror($from, $to)
+    {
+        $fileSystem = new SymfonyFilesystem();
+
+        $fileSystem->mirror($from, $to);
+    }
+
+    /**
+     * Copy the given folder to a new location.
+     *
+     * @param  string  $from
+     * @param  string  $to
+     * @return void
+     */
+    public function mirrorAsUser($from, $to)
+    {
+        $fileSystem = new SymfonyFilesystem();
+
+        $fileSystem->mirror($from, $to);
+
+        $this->chown($to, user());
     }
 
     /**

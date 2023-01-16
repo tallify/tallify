@@ -8,7 +8,17 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class Question
 {
-    public function confirm($that, $question, InputInterface $input, OutputInterface $output)
+    /**
+     * Ask the user a confirmation question
+     *
+     * @param string $question
+     * @param Application $that
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return boolean
+     */
+    public function confirm($question, $that, InputInterface $input, OutputInterface $output)
     {
         $helper = $that->getHelperSet()->get('question');
         $question = new ConfirmationQuestion(

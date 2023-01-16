@@ -29,11 +29,19 @@ class Facade
     }
 }
 
+class Build extends Facade
+{
+}
+
 class Configuration extends Facade
 {
 }
 
 class Command extends Facade
+{
+}
+
+class Output extends Facade
 {
 }
 

@@ -2,14 +2,18 @@
 
 namespace Tallify;
 
+use Output;
 use Command;
+use Question;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Configuration
 {
     public $files;
 
     /**
-     * Create a new Valet configuration class instance.
+     * Create a new Filesystem class instance.
      *
      * @param  Filesystem  $files
      */
@@ -38,10 +42,10 @@ class Configuration
      */
     public function uninstall()
     {
-        $config = $this->readConfig();
+        $config = $this->read();
 
         if ($config['tallify-custom-config']) {
-            $dir = $config['tallify-custom-config-path'] . '/tallify';
+            $dir = $config['tallify-custom-config-path'];
             if (is_dir($dir)) {
                 $this->files->rmDirAndContents($dir);
             }
@@ -63,10 +67,26 @@ class Configuration
     /**
      * Reset the Tallify configuration file to its default state.
      *
+     * @param Application $that
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
      * @return void
      */
-    public function resetConfigurationFile()
+    public function resetConfigurationFile($that, InputInterface $input, OutputInterface $output)
     {
+        $config = $this->read();
+        $dir = $config['tallify-custom-config-path'];
+
+        if (is_dir($dir)) {
+            $question = "It looks like you published the Tallify configuration. Would you like to remove it as well? [y/N]";
+            $answer = Question::confirm($question, $that, $input, $output);
+
+            if ($answer) {
+                $this->files->rmDirAndContents($dir);
+            }
+        }
+
         $this->removeConfigurationFile();
 
         $this->createConfigurationDirectory();
@@ -94,13 +114,13 @@ class Configuration
     {
         if (!$this->files->exists($this->defaultPath())) {
             $this->write([
-                'laravel-repositories-path'                => "",
-                'tallify-custom-config'             => false,
-                'tallify-custom-config-path'        => "",
+                'laravel-repositories-path'             => "",
+                'tallify-custom-config'                 => false,
+                'tallify-custom-config-path'            => "",
                 'composer-dependencies'                 => [
                     'livewire/livewire',
                 ],
-                'composer-dev-dependencies'     => [
+                'composer-dev-dependencies'             => [
                     "pestphp/pest-plugin-parallel",
                     "pestphp/pest-plugin-livewire",
                     "barryvdh/laravel-ide-helper",
@@ -110,6 +130,10 @@ class Configuration
                     "pestphp/pest",
                     "laravel/pint",
                 ],
+                "laravel-default-composer-dependencies-to-remove"    => [],
+                "laravel-default-composer-dev-dependencies-to-remove"    => [],
+                "artisan-commands"                      => [],
+                "post-update-cmd"                       => [],
                 'npm-dependencies'                      => [
                     "@defstudio/vite-livewire-plugin",
                     "@tailwindcss/aspect-ratio",
@@ -128,15 +152,16 @@ class Configuration
                     "@alpinejs/ui",
                     "alpinejs",
                 ],
-                'stubs'                   => [
+                "laravel-default-npm-dependencies-to-remove"    => [],
+                'stubs'                                 => [
                     // "stub file"              => "path/to/install/file"
                     "AppServiceProvider.php"    => "app/Providers",
-                    "tailwind.config.js"        => "",
-                    "postcss.config.js"         => "",
-                    "vite.config.js"            => "",
+                    "tailwind.config.js"        => "/",
+                    "postcss.config.js"         => "/",
+                    "vite.config.js"            => "/",
                     "app.blade.php"             => "resources/layouts",
-                    "AppLayout.php"             => "app/Views/Components",
-                    "phpstan.neon"              => "",
+                    "AppLayout.php"             => "app/View/Components",
+                    "phpstan.neon"              => "/",
                     "tailwind.css"              => "resources/css/libraries",
                     "livewire.js"               => "resources/js",
                     "alpine.css"                => "resources/css/libraries",
@@ -145,8 +170,9 @@ class Configuration
                     "vite.js"                   => "resources/js/libraries",
                     "app.css"                   => "resources/css",
                     "app.js"                    => "resources/js",
-                    "web.js"                    => "routes",
+                    "web.php"                    => "routes",
                 ],
+                'stubs-directories'                 => [],
             ]);
         }
     }
@@ -155,16 +181,34 @@ class Configuration
      * Publish default configuration to a given path for customisation
      *
      * @param string $path
+     * @param Application $that
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param boolean $force
      *
      * @return void
      */
-    public function publishFiles($path)
+    public function publishFiles($path, $that, InputInterface $input, OutputInterface $output, $force = null)
     {
-        $config = $this->readConfig();
+        $config = $this->read();
+
+        $dir = $config['tallify-custom-config-path'];
+
+        if (is_dir($dir) && !$force) {
+            $question = "It looks like this path already exists. Would you like to carry on? [y/N]";
+            $answer = Question::confirm($question, $that, $input, $output);
+
+            if ($answer == false) {
+                return Output::italicSingle(
+                    "Process canceled. Your tallify configuration has <span class='font-bold underline'>NOT</span> been published.",
+                    'warning',
+                );
+            }
+        }
 
         $config['tallify-custom-config'] = true;
 
-        $config['tallify-custom-config-path'] = removeTrailingSlash($path);
+        $config['tallify-custom-config-path'] = removeTrailingSlash($path) . '/tallify';
 
         $this->write($config);
 
@@ -173,27 +217,51 @@ class Configuration
             $this->files->ensureDirExists($path . '/tallify/stubs', user());
         }
 
-        $configPath = $path . "/tallify";
+        $customConfigPath = $config['tallify-custom-config-path'];
         $defaultStubsPath = __DIR__ . '/../stubs/';
-        $destinationStubsPath = $path . '/tallify/stubs/';
+        $destinationStubsPath = $customConfigPath . '/stubs';
 
-        $this->files->copy(TALLIFY_HOME_PATH . '/config.json', $configPath . '/config.json');
+        $this->files->copy(TALLIFY_HOME_PATH . '/config.json', $customConfigPath . '/config.json');
 
         foreach ($this->files->scandir($defaultStubsPath) as $stub) {
-            $this->files->copy($defaultStubsPath . '/' . $stub, $destinationStubsPath . $stub);
+            $this->files->copy($defaultStubsPath . '/' . $stub, $destinationStubsPath . '/' . $stub);
         }
+    }
+
+    /**
+     * Remove published configuration directory and files
+     *
+     * @return void
+     */
+    public function removePublishedFiles()
+    {
+        $key = 'tallify-custom-config-path';
+        $config = $this->read();
+
+        $this->files->rmDirAndContents($config[$key]);
+    }
+
+    /**
+     * Check if Tallify directory and files have been published already
+     *
+     * @return boolean
+     */
+    public function checkIfConfigurationHasBeenPublished()
+    {
+        $key = 'tallify-custom-config';
+        $config = $this->read();
+
+        return $config[$key];
     }
 
     /**
      * Get the path to the Tallify configuration file.
      *
-     * @param  string  $path
-     *
-     * @return void
+     * @return string
      */
     public function getParkedPath()
     {
-        $config = $this->readConfig();
+        $config = $this->read();
 
         return $config['laravel-repositories-path'];
     }
@@ -207,7 +275,7 @@ class Configuration
      */
     public function setParkedPath($path)
     {
-        $config = $this->readConfig();
+        $config = $this->read();
 
         $config['laravel-repositories-path'] = removeTrailingSlash($path);
 
@@ -217,16 +285,14 @@ class Configuration
     /**
      * Add a package to the default Tallify configuration file.
      *
-     * @param string $library
+     * @param string $key
      * @param string $packageName
-     * @param string $dev
      *
      * @return void
      */
-    public function addPackageTo($library, $packageName, $dev)
+    public function addPackageTo($key, $packageName)
     {
-        $key = $library == 'npm' ? 'npm-packages' : ($dev ? 'composer-development-packages' : 'composer-packages');
-        $config = $this->readConfig();
+        $config = $this->read();
 
         array_push($config[$key], $packageName);
 
@@ -235,41 +301,30 @@ class Configuration
 
     /**
      * Remove a package to the default Tallify configuration file.
-     *
-     * @param string $library
+     * @param string $key
      * @param string $packageName
-     * @param string $dev
      *
-     * @return boolean
+     * @return void
      */
-    public function removePackageFrom($library, $packageName, $dev)
+    public function removePackageFrom($key, $packageName)
     {
-        $key = $library == 'npm' ? 'npm-packages' : ($dev ? 'composer-development-packages' : 'composer-packages');
-        $config = $this->readConfig();
+        $config = $this->read();
 
-        if (in_array($packageName, $config[$key])) {
-            array_splice($config[$key], array_search($packageName, $config[$key]), 1);
+        array_splice($config[$key], array_search($packageName, $config[$key]), 1);
 
-            $this->write($config);
-
-            return true;
-        }
-
-        return false;
+        $this->write($config);
     }
 
     /**
      * Displays default composer or npm packages from the tallify configuration file.
      *
-     * @param string $library
-     * @param string $dev
+     * @param string $key
      *
      * @return array
      */
-    public function displayDefaultPackagesFor($library, $dev)
+    public function displayDefaultPackagesFor($key)
     {
-        $key = $library == 'npm' ? 'npm-dependencies' : ($dev ? 'composer-dev-dependencies' : 'composer-dependencies');
-        $config = $this->readConfig();
+        $config = $this->read();
 
         return $config[$key];
     }
@@ -277,16 +332,14 @@ class Configuration
     /**
      * Check if package already is in the tallify configuration file.
      *
-     * @param string $library
+     * @param string $key
      * @param string $packageName
-     * @param string $dev
      *
      * @return boolean
      */
-    public function checkIfPackageIsInConfigurationFile($library, $packageName, $dev)
+    public function checkIfPackageIsInConfigurationFile($key, $packageName)
     {
-        $key = $library == 'npm' ? 'npm-packages' : ($dev ? 'composer-development-packages' : 'composer-packages');
-        $config = $this->readConfig();
+        $config = $this->read();
 
         return in_array($packageName, $config[$key]);
     }
@@ -294,17 +347,19 @@ class Configuration
     /**
      * Check if package exists.
      *
-     * @param string $library
+     * @param string $key
      * @param string $packageName
      *
      * @return boolean
      */
-    public function checkIfPackageExists($library, $packageName)
+    public function checkIfPackageExists($key, $packageName)
     {
-        if ($library == "composer") {
+        if ($key == "composer-dependencies" || $key == "composer-dev-dependencies") {
             if (!str_contains($packageName, "/")) {
                 return false;
             }
+
+            // Check if repository exists
             $status = Command::cUrl("https://github.com/$packageName");
 
             if ($status == "200") {
@@ -312,7 +367,8 @@ class Configuration
             }
         }
 
-        if ($library == "npm") {
+        if ($key == "npm-dependencies") {
+            // Check if repository exists
             $status = Command::cUrl("https://www.npmjs.com/package/$packageName");
 
             if ($status == "200") {
@@ -328,13 +384,14 @@ class Configuration
      *
      * @param string $stubName
      * @param string $stubPath
+     * @param boolean $directoy
      *
      * @return void
      */
-    public function addStub($stubName, $stubPath)
+    public function addStub($stubName, $stubPath, $directory = null)
     {
-        $key = 'stubs';
-        $config = $this->readConfig();
+        $key = $directory ? 'stubs-directories' : 'stubs';
+        $config = $this->read();
 
         $sanitisedPath = $stubPath === "/" ? $stubPath : removeLeadingSlash(removeTrailingSlash($stubPath));
 
@@ -353,7 +410,7 @@ class Configuration
     public function removeStub($stubName)
     {
         $key = 'stubs';
-        $config = $this->readConfig();
+        $config = $this->read();
 
         unset($config[$key][$stubName]);
 
@@ -364,13 +421,15 @@ class Configuration
      * Check if stub already is in the tallify configuration file.
      *
      * @param string $stubName
+     * @param boolean $directory
      *
      * @return boolean
      */
-    public function checkIfStubIsInConfigurationFile($stubName)
+    public function checkIfStubIsInConfigurationFile($stubName, $directory = null)
     {
         $key = 'stubs';
-        $config = $this->readConfig();
+        $key = $directory ? 'stubs-directories' : 'stubs';
+        $config = $this->read();
 
         return array_key_exists($stubName, $config[$key]);
     }
@@ -378,13 +437,16 @@ class Configuration
     /**
      * Displays default stubs from the tallify configuration file.
      *
+     * @param boolean $directory
+     *
      * @return array
      */
-    public function displayDefaultStubs()
+    public function displayDefaultStubs($directory = null)
     {
-        $config = $this->readConfig();
+        $key = $directory ? 'stubs-directories' : 'stubs';
+        $config = $this->read();
 
-        return $config['stubs'];
+        return $config[$key];
     }
 
     /**
@@ -394,7 +456,7 @@ class Configuration
      */
     public function checkIfParked()
     {
-        $config = $this->readConfig();
+        $config = $this->read();
 
         if (is_null($config)) {
             return false;
@@ -410,7 +472,7 @@ class Configuration
      *
      * @return array
      */
-    public function readConfig()
+    public function read()
     {
         $path = $this->getPath();
 
@@ -452,7 +514,7 @@ class Configuration
             return $this->defaultPath();
         }
 
-        if (!is_dir($config[$key . '-path'] . '/tallify')) {
+        if (!is_dir($config[$key . '-path'])) {
             return $this->defaultPath();
         }
 
@@ -476,6 +538,17 @@ class Configuration
      */
     public function customPath($config)
     {
-        return $config['tallify-custom-config-path'] . '/tallify/config.json';
+        return $config['tallify-custom-config-path'] . '/config.json';
+    }
+
+    /**
+     * Get Tallify configuration file key for a given library
+     */
+    public function getLibraryConfigKeyAttribute($library, $dev = null, $remove = null)
+    {
+        if ($remove) {
+            return $library == 'npm' ? 'laravel-default-npm-dependencies-to-remove' : ($dev ? 'laravel-default-composer-dev-dependencies-to-remove' : 'laravel-default-composer-dependencies-to-remove');
+        }
+        return $library == 'npm' ? 'npm-dependencies' : ($dev ? 'composer-dev-dependencies' : 'composer-dependencies');
     }
 }

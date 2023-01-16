@@ -27,7 +27,7 @@ Here's a brief look at each command in this repo:
 | [stub:remove](#The-stubremove-command)       | Remove custom stubs to your tallify configuration file.      |
 | [stub:list](#The-stub-command)               | List all stubs.                                              |
 | [config:reset](#The-configreset-command)     | Reset the tallify configuration file to its default state.   |
-| [config:publish](#The-configpublish-command) | Publish the tallify configuration and files for personal customization. |
+| [publish](#The-publish-command)              | Publish the tallify configuration and files for personal customization. |
 | [build](#The-build-command)                  | Tallify a given Laravel application.                         |
 
 
@@ -256,12 +256,12 @@ For a more substantial customisation of the default Tallify configuration file, 
 
 Tallify comes shipped with default stub files that is uses to modify a fresh Laravel project. If you want to have more modifications from the start, and you want to create many stub files, it is easier to do so by publishing the Tallify default configuration file and stubs and add your own.
 
-#### The `config:publish` command
+#### The `publish` command
 
 Publishing the default files to a path on your computer of your choosing, will copy the default files to this newly created `path/you/want/` `tallify` directory. Simply open this directory with the code editor of your choice and start tweaking everything you want.
 
 ```
-tallify config:publish /path/for/custom/config
+tallify publish /path/for/custom/config
 
 // creates a tallify directory in /path/for/custom/config
 ```
@@ -292,7 +292,7 @@ To do so, you can either use the [`stub:add`](#The-stubadd-command) command <u>o
 Let say we want to use `laravel-mix`. The first step is to publish the Tallify files to a specific path on our machine.
 
 ```bash
-tallify config:publish ~/Code/Config
+tallify publish ~/Code/Config
 
 // creates a tallify directory at ~/Code/Config
 ```
