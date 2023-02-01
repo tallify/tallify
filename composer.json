@@ -1,6 +1,6 @@
 {
     "name": "tallify/tallify",
-    "description": "The Laravel application Tallifyer installer.",
+    "description": "The Laravel application Tallifyer helper.",
     "keywords": [
         "tall stack",
         "laravel",
