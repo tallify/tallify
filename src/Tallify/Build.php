@@ -19,7 +19,7 @@ class Build
      * @param  Filesystem  $files
      * @param  Configuration  $config
      */
-    public function __construct(Filesystem $files, Configuration $config)
+    public function __construct(Filesystem $files, Config $config)
     {
         $this->files = $files;
         $this->config = $config;
@@ -63,7 +63,7 @@ class Build
         $key = 'tallify-custom-config';
         $config = $this->config->read();
 
-        return $config[$key] ? ($config[$key . '-path']) . '/stubs' : TALLIFY_SRC_PATH . '/src/stubs';
+        return $config[$key] ? ($config[$key . '-path']) . '/stubs' : TALLIFY_SRC_PATH . '/stubs';
     }
 
     /**

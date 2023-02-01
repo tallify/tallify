@@ -19,7 +19,7 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 /**
  * Create the application.
  */
-$version = '1.0.2';
+$version = '1.0.3';
 
 $app = new Application('Tallify installer', $version);
 
@@ -143,6 +143,34 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     })->descriptions('Publish the tallify configuration and files for personal customization.', [
         'path' => 'Hard path to where you want to publish default configuration files for customisation.',
     ]);
+
+    /**
+     * Unpublish Tallify configuration and files to a given path.
+     */
+    $app->command('unpublish', function (InputInterface $input, OutputInterface $output) {
+        if (Config::checkIfConfigurationHasBeenPublished()) {
+            $question = 'Are you sure you want to unpublish Tallify? [y/N]';
+            $answer = Question::confirm($question, $this, $input, $output);
+
+            if ($answer == false) {
+                return Output::italicSingle(
+                    "Process canceled. Your tallify configuration file has <span class='font-bold underline'>NOT</span> been unpublished.",
+                    'warning',
+                );
+            }
+
+            Config::removePublishedFiles();
+
+            return Output::italicSingle(
+                "Tallify configuration and default files have been unpublished.",
+                'success',
+            );
+        }
+
+        return Output::italicSingle(
+            "It looks like you did not previously published Tallify.",
+        );
+    })->descriptions('Unpublish the tallify configuration and files for personal customization.');
 
     /**
      * Returns the path to the custom tallify configuration files.
@@ -455,7 +483,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     /**
      * Remove a stub to the list of default stubs to install.
      */
-    $app->command('stub:remove stub-name [--directory]', function ($stubName, $directory) {
+    $app->command('stub:remove stub-name [--directory]', function ($stubName, $directory = null) {
         if (!Config::checkIfStubIsInConfigurationFile($stubName)) {
             return Output::italicSingle(
                 "It looks like $stubName was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",

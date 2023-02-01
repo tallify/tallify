@@ -43,6 +43,7 @@ Here's a brief look at each command in this repo:
 | [config:reset](#The-configreset-command)         | Reset the tallify configuration file to its default state.   |
 | [publish](#The-publish-command)                  | Publish the tallify configuration and files for personal customization. |
 | [published](#The-published-command)              | Shows the directory where the config file and stubs are.     |
+| [unpublish](#The-unpublish-command)              | Unpublish the tallify configuration and files for personal customization. |
 | [build](#The-build-command)                      | Tallify a given Laravel application.                         |
 
 
@@ -503,9 +504,34 @@ You can now add or remove stub files as you please.
 
 ⚠️ **Bear in mind that if you add your own stub files, you need to tell Tallify about them!**
 
-To do so, you can either use the [`stub:add`](#The-stubadd-command) command <u>or</u> add the manually from your code editor within the `stubs` object in the `config.json` file. The `key` is the name of the stub file and the `value` represents the path to where in your Laravel application you want to add it.
+To do so, you can either use the [`stub:add`](#The-stubadd-command) command **or** add the manually from your code editor within the `stubs` object in the `config.json` file. The `key` is the name of the stub file and the `value` represents the path to where in your Laravel application you want to add it.
 
-#### <u>Here is an example:</u>
+---
+
+#### The `published` command
+
+If you are unsure to wether you did use the `publish` command, if you struggle remembering where you actually 'published' Tallify, or if you know you 'published' Tallify in the wrong place, use the `published` command to see where your custom Tallify configuration file is.
+
+```bash
+// Outputs where the customed Tallify files are located on your computer
+tallify published
+```
+
+---
+
+#### The `unpublish` command
+
+If you want to go back to the original config or if you just want to start customising from fresh, you can use the `unpublish` command. This will delete your previous customed Tallify configuration and files.
+
+```bash
+tallify unpublish
+```
+
+
+
+
+
+### <u>Here is an example of customisation:</u>
 
 Let say we want to use `laravel-mix`. The first step is to publish the Tallify files to a specific path on our machine.
 
