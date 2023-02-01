@@ -19,7 +19,7 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 /**
  * Create the application.
  */
-$version = '1.0.0';
+$version = '1.0.2';
 
 $app = new Application('Tallify installer', $version);
 
@@ -29,7 +29,7 @@ $app = new Application('Tallify installer', $version);
 $app->command('install', function () {
     sleep(1);
 
-    Configuration::install();
+    Config::install();
 
     Output::italicSingle(
         "Tallify was successfully installed.",
@@ -62,7 +62,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        Configuration::uninstall();
+        Config::uninstall();
 
         sleep(1);
 
@@ -76,7 +76,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Tell Tallify where all your Laravel applications live.
      */
     $app->command('park [path]', function ($path = null) {
-        Configuration::setParkedPath($path ?: getcwd());
+        Config::setParkedPath($path ?: getcwd());
 
         return Output::italicSingle(
             "Tallify is ready to work its magic!",
@@ -88,7 +88,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Returns the path to the user folder where all Laravel applications live.
      */
     $app->command('parked', function () {
-        $parkedPath = Configuration::getParkedPath();
+        $parkedPath = Config::getParkedPath();
 
         if (empty($parkedPath)) {
             return Output::italicSingle(
@@ -120,7 +120,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             }
         }
 
-        if (Configuration::checkIfConfigurationHasBeenPublished()) {
+        if (Config::checkIfConfigurationHasBeenPublished()) {
             $question = 'Your already published the Tallify files. Would you like to do it again? [y/N]';
             $answer = Question::confirm($question, $this, $input, $output);
 
@@ -131,10 +131,10 @@ if (is_dir(TALLIFY_HOME_PATH)) {
                 );
             }
 
-            Configuration::removePublishedFiles();
+            Config::removePublishedFiles();
         }
 
-        Configuration::publishFiles($path ?: getcwd(), $this, $input, $output, $force);
+        Config::publishFiles($path ?: getcwd(), $this, $input, $output, $force);
 
         return Output::italicSingle(
             "Tallify configuration and default files have been published to $path/tallify.",
@@ -148,7 +148,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Returns the path to the custom tallify configuration files.
      */
     $app->command('published', function () {
-        $publishedPath = Configuration::getPublishedPath();
+        $publishedPath = Config::getPublishedPath();
 
         if (empty($publishedPath)) {
             $path = TALLIFY_HOME_PATH;
@@ -179,7 +179,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        Configuration::resetConfigurationFile($this, $input,  $output);
+        Config::resetConfigurationFile($this, $input,  $output);
 
         return Output::italicSingle(
             "Tallify configuration file has been reset successfully!",
@@ -203,16 +203,16 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        $libraryConfigKey = Configuration::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev, true);
+        $libraryConfigKey = Config::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev, true);
 
-        if (Configuration::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
+        if (Config::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
             return Output::italicSingle(
                 "$packageName already is in your tallify configuration file at $libraryConfigKey.",
                 'warning',
             );
         }
 
-        Configuration::addPackageTo($libraryConfigKey, $packageName);
+        Config::addPackageTo($libraryConfigKey, $packageName);
 
         return Output::italicSingle(
             "$packageName has been successfully added to your tallify $libraryConfigKey packages to remove from the default Laravel application.",
@@ -241,16 +241,16 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        $libraryConfigKey = Configuration::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev, true);
+        $libraryConfigKey = Config::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev, true);
 
-        if (!Configuration::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
+        if (!Config::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
             return Output::italicSingle(
                 "$packageName isn't in your tallify configuration file at $libraryConfigKey.",
                 'warning',
             );
         }
 
-        Configuration::removePackageFrom($libraryConfigKey, $packageName);
+        Config::removePackageFrom($libraryConfigKey, $packageName);
 
         return Output::italicSingle(
             "$packageName has been successfully remove to your tallify $libraryConfigKey packages to remove from the default Laravel application.",
@@ -278,9 +278,9 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        $libraryConfigKey = Configuration::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev, true);
+        $libraryConfigKey = Config::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev, true);
 
-        $packages = Configuration::displayDefaultPackagesFor($libraryConfigKey);
+        $packages = Config::displayDefaultPackagesFor($libraryConfigKey);
 
         if (empty($packages)) {
             return Output::italicSingle(
@@ -319,23 +319,23 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        $libraryConfigKey = Configuration::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev);
+        $libraryConfigKey = Config::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev);
 
-        if (Configuration::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
+        if (Config::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
             return Output::italicSingle(
                 "$packageName already is in your tallify configuration file at $libraryConfigKey.",
                 'warning',
             );
         }
 
-        if (!Configuration::checkIfPackageExists($libraryConfigKey, $packageName)) {
+        if (!Config::checkIfPackageExists($libraryConfigKey, $packageName)) {
             return Output::italicSingle(
                 "The $packageName package does not seem to exist. <span class='font-bold underline'>Please, verify the package you want to add exists OR ensure there is no typo then try again.</span>",
                 'error',
             );
         }
 
-        Configuration::addPackageTo($libraryConfigKey, $packageName);
+        Config::addPackageTo($libraryConfigKey, $packageName);
 
         return Output::italicSingle(
             "$packageName has been successfully added to your default tallify $libraryConfigKey packages.",
@@ -364,16 +364,16 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        $libraryConfigKey = Configuration::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev);
+        $libraryConfigKey = Config::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev);
 
-        if (!Configuration::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
+        if (!Config::checkIfPackageIsInConfigurationFile($libraryConfigKey, $packageName)) {
             return Output::italicSingle(
                 "$packageName isn't in your tallify configuration file at $libraryConfigKey.",
                 'warning',
             );
         }
 
-        Configuration::removePackageFrom($libraryConfigKey, $packageName);
+        Config::removePackageFrom($libraryConfigKey, $packageName);
 
         return Output::italicSingle(
             "$packageName has been successfully removed to your default tallify $libraryConfigKey packages.",
@@ -401,9 +401,9 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             );
         }
 
-        $libraryConfigKey = Configuration::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev);
+        $libraryConfigKey = Config::getLibraryConfigKeyAttribute($composer ? 'composer' : 'npm', $dev);
 
-        $packages = Configuration::displayDefaultPackagesFor($libraryConfigKey);
+        $packages = Config::displayDefaultPackagesFor($libraryConfigKey);
 
         if (empty($packages)) {
             return Output::italicSingle(
@@ -433,14 +433,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
         $stubPath,
         $directory = null
     ) {
-        if (Configuration::checkIfStubIsInConfigurationFile($stubName, $stubPath)) {
+        if (Config::checkIfStubIsInConfigurationFile($stubName, $stubPath)) {
             return Output::italicSingle(
                 "$stubName already is in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::addStub($stubName, $stubPath, $directory);
+        Config::addStub($stubName, $stubPath, $directory);
 
         return Output::italicSingle(
             "$stubName has been successfully added to your default stubs.",
@@ -456,14 +456,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Remove a stub to the list of default stubs to install.
      */
     $app->command('stub:remove stub-name [--directory]', function ($stubName, $directory) {
-        if (!Configuration::checkIfStubIsInConfigurationFile($stubName)) {
+        if (!Config::checkIfStubIsInConfigurationFile($stubName)) {
             return Output::italicSingle(
                 "It looks like $stubName was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::removeStub($stubName, $directory);
+        Config::removeStub($stubName, $directory);
 
         return Output::italicSingle(
             "$stubName has been successfully removed from your default stubs.",
@@ -478,7 +478,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * List all default stubs.
      */
     $app->command('stub:list [--directory]', function ($directory) {
-        $stubs = Configuration::displayDefaultStubs($directory);
+        $stubs = Config::displayDefaultStubs($directory);
 
         if (empty($stubs)) {
             return Output::italicSingle(
@@ -502,14 +502,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Add an artisan command to the list of default artisan commands to run post install.
      */
     $app->command('command:add command-name [--post-update]', function ($commandName, $postUpdate = null) {
-        if (Configuration::checkIfArtisanCommandIsInConfigurationFile($commandName, $postUpdate)) {
+        if (Config::checkIfArtisanCommandIsInConfigurationFile($commandName, $postUpdate)) {
             return Output::italicSingle(
                 "'$commandName' already is in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::addArtisanCommand($commandName, $postUpdate);
+        Config::addArtisanCommand($commandName, $postUpdate);
 
         return Output::italicSingle(
             "'$commandName' has been successfully added to your default artisan commands to run post install/update.",
@@ -524,14 +524,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Remove an artisan command to the list of default artisan commands to run post install.
      */
     $app->command('command:remove command-name [--post-update]', function ($commandName, $postUpdate = null) {
-        if (!Configuration::checkIfArtisanCommandIsInConfigurationFile($commandName, $postUpdate)) {
+        if (!Config::checkIfArtisanCommandIsInConfigurationFile($commandName, $postUpdate)) {
             return Output::italicSingle(
                 "It looks like '$commandName' was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::removeArtisanCommand($commandName, $postUpdate);
+        Config::removeArtisanCommand($commandName, $postUpdate);
 
         return Output::italicSingle(
             "'$commandName' has been successfully removed from your default artisan commands to run post install/update.",
@@ -546,7 +546,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * List all artisan commands from the Tallify configuration file.
      */
     $app->command('command:list [--post-update]', function ($postUpdate = null) {
-        $commands = Configuration::displayDefaultArtisanCommands($postUpdate);
+        $commands = Config::displayDefaultArtisanCommands($postUpdate);
 
         if (empty($commands)) {
             return Output::italicSingle(
@@ -570,14 +570,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Add an environment variable to the .env file
      */
     $app->command('env:add env-variable', function ($envVariable) {
-        if (Configuration::checkIfVariableIsInConfigurationFile($envVariable)) {
+        if (Config::checkIfVariableIsInConfigurationFile($envVariable)) {
             return Output::italicSingle(
                 "$envVariable already is in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::addEnvVariable($envVariable);
+        Config::addEnvVariable($envVariable);
 
         return Output::italicSingle(
             "$envVariable has been successfully added to the list of files you want to add to the .env file.",
@@ -591,14 +591,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Remove an environment variable to the .env file
      */
     $app->command('env:remove env-variable', function ($envVariable) {
-        if (!Configuration::checkIfVariableIsInConfigurationFile($envVariable)) {
+        if (!Config::checkIfVariableIsInConfigurationFile($envVariable)) {
             return Output::italicSingle(
                 "It looks like $envVariable was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::removeEnvVariable($envVariable);
+        Config::removeEnvVariable($envVariable);
 
         return Output::italicSingle(
             "$envVariable has been successfully removed from the list of environment variables you want to add to the .env file.",
@@ -612,7 +612,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * List all environment variables from the Tallify configuration file.
      */
     $app->command('env:list', function () {
-        $variables = Configuration::displayDefaultEnvironmentVariables();
+        $variables = Config::displayDefaultEnvironmentVariables();
 
         if (empty($variables)) {
             return Output::italicSingle(
@@ -634,14 +634,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Add an file to the .gitignore file
      */
     $app->command('gitignore:add file-path', function ($filePath) {
-        if (Configuration::checkIfFileIsInConfigurationFile($filePath)) {
+        if (Config::checkIfFileIsInConfigurationFile($filePath)) {
             return Output::italicSingle(
                 "$filePath already is in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::addFileToGitignore($filePath);
+        Config::addFileToGitignore($filePath);
 
         return Output::italicSingle(
             "$filePath has been successfully added to the list of files you want to add to the .gitignore file.",
@@ -655,14 +655,14 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * Remove a file from the .gitignore file
      */
     $app->command('gitignore:remove file-path', function ($filePath) {
-        if (!Configuration::checkIfFileIsInConfigurationFile($filePath)) {
+        if (!Config::checkIfFileIsInConfigurationFile($filePath)) {
             return Output::italicSingle(
                 "It looks like $filePath was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
                 'warning',
             );
         }
 
-        Configuration::removeFileFromGitignore($filePath);
+        Config::removeFileFromGitignore($filePath);
 
         return Output::italicSingle(
             "$filePath has been successfully removed from the list of files you want to add to the .gitignore file.",
@@ -676,7 +676,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
      * List all .env files from the Tallify configuration file.
      */
     $app->command('gitignore:list', function () {
-        $variables = Configuration::displayDefaultGitignoreFiles();
+        $variables = Config::displayDefaultGitignoreFiles();
 
         if (empty($variables)) {
             return Output::italicSingle(
@@ -697,7 +697,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
 
 
 
-    if (Configuration::checkIfParked()) {
+    if (Config::checkIfParked()) {
         /**
          * Command to "tallify" a laravel project
          */

@@ -8,7 +8,7 @@ use Question;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Configuration
+class Config
 {
     public $files;
 

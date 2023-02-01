@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
-pwd
-# SOURCE="${BASH_SOURCE[0]}"
+SOURCE="${BASH_SOURCE[0]}"
 
-# DIR=$(pwd)
+# dir of script
+DIR="$( cd "$( dirname $SOURCE )" && pwd )";
+# parent dir of that dir
+PARENT_DIRECTORY="${DIR%/*}"
 
-# if [[ "$EUID" -ne 0 ]]
-# then
-#     sudo USER="$USER" --preserve-env "$SOURCE" "$@"
-#     exit
-# fi
-
-# php "$DIR/src/tallify.php" "$@"
+php "$PARENT_DIRECTORY/src/tallify.php" "$@"

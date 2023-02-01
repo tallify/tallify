@@ -2,7 +2,7 @@
 
 use Illuminate\Container\Container;
 
-class Facade
+class MyFacade
 {
     /**
      * The key for the binding in the container.
@@ -29,22 +29,22 @@ class Facade
     }
 }
 
-class Build extends Facade
+class Build extends MyFacade
 {
 }
 
-class Configuration extends Facade
+class Config extends MyFacade
 {
 }
 
-class Command extends Facade
+class Command extends MyFacade
 {
 }
 
-class Output extends Facade
+class Output extends MyFacade
 {
 }
 
-class Question extends Facade
+class Question extends MyFacade
 {
 }
