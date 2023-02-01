@@ -9,6 +9,51 @@ use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 class Filesystem
 {
     /**
+     * Add the given string to the end of the given file.
+     *
+     * @param  string  $text
+     * @param  string  $file
+     * @return void
+     */
+    public function addInFile(string $text, string $file)
+    {
+        file_put_contents(
+            $file,
+            $text . "\n",
+            FILE_APPEND | LOCK_EX
+        );
+    }
+
+    /**
+     * Append the contents to the given file.
+     *
+     * @param  string  $path
+     * @param  string  $contents
+     * @param  string|null  $owner
+     * @return void
+     */
+    public function append($path, $contents, $owner = null)
+    {
+        file_put_contents($path, $contents, FILE_APPEND);
+
+        if ($owner) {
+            $this->chown($path, $owner);
+        }
+    }
+
+    /**
+     * Append the contents to the given file as the non-root user.
+     *
+     * @param  string  $path
+     * @param  string  $contents
+     * @return void
+     */
+    public function appendAsUser($path, $contents)
+    {
+        $this->append($path, $contents, user());
+    }
+
+    /**
      * Change the owner of the given path.
      *
      * @param  string  $path
@@ -184,6 +229,24 @@ class Filesystem
     public function putAsUser($path, $contents)
     {
         $this->put($path, $contents, user());
+    }
+
+    /**
+     * Replace the given string in the given file.
+     *
+     * @param  string  $search
+     * @param  string  $replace
+     * @param  string  $file
+     * @return void
+     */
+    public function replaceInFile(string $search, string $replace, string $file)
+    {
+        file_put_contents(
+            $file,
+            str_replace($search, $replace, file_get_contents($file))
+        );
+
+        $this->chown($file, user());
     }
 
     /**

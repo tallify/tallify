@@ -159,20 +159,30 @@ class Configuration
                     "tailwind.config.js"        => "/",
                     "postcss.config.js"         => "/",
                     "vite.config.js"            => "/",
-                    "app.blade.php"             => "resources/layouts",
+                    "app.blade.php"             => "resources/views/layouts",
                     "AppLayout.php"             => "app/View/Components",
                     "phpstan.neon"              => "/",
                     "tailwind.css"              => "resources/css/libraries",
-                    "livewire.js"               => "resources/js",
+                    "livewire.js"               => "resources/js/libraries",
                     "alpine.css"                => "resources/css/libraries",
                     "inter.css"                 => "resources/css/fonts",
                     "alpine.js"                 => "resources/js/libraries",
                     "vite.js"                   => "resources/js/libraries",
                     "app.css"                   => "resources/css",
                     "app.js"                    => "resources/js",
-                    "web.php"                    => "routes",
                 ],
-                'stubs-directories'                 => [],
+                'stubs-directories'                             => [],
+                'add-to-gitignore'                              => [
+                    "_ide_helper_models",
+                    "_ide_helper",
+                    ".DS_Store",
+                    ".env.staging",
+                ],
+                "add-to-dot-env"                                => [
+                    'VITE_APP_URL="${APP_URL}"',
+                    'VITE_BROWSER="google-chrome"',
+                    'VITE_LIVEWIRE_OPT_IN=true',
+                ],
             ]);
         }
     }
@@ -239,6 +249,18 @@ class Configuration
         $config = $this->read();
 
         $this->files->rmDirAndContents($config[$key]);
+    }
+
+    /**
+     * Get the path to the custom Tallify configuration file.
+     *
+     * @return string
+     */
+    public function getPublishedPath()
+    {
+        $config = $this->read();
+
+        return $config['tallify-custom-config-path'];
     }
 
     /**
@@ -388,7 +410,7 @@ class Configuration
      *
      * @return void
      */
-    public function addStub($stubName, $stubPath, $directory = null)
+    public function addStub($stubName, $stubPath, $directory)
     {
         $key = $directory ? 'stubs-directories' : 'stubs';
         $config = $this->read();
@@ -425,9 +447,8 @@ class Configuration
      *
      * @return boolean
      */
-    public function checkIfStubIsInConfigurationFile($stubName, $directory = null)
+    public function checkIfStubIsInConfigurationFile($stubName, $directory)
     {
-        $key = 'stubs';
         $key = $directory ? 'stubs-directories' : 'stubs';
         $config = $this->read();
 
@@ -441,9 +462,206 @@ class Configuration
      *
      * @return array
      */
-    public function displayDefaultStubs($directory = null)
+    public function displayDefaultStubs($directory)
     {
         $key = $directory ? 'stubs-directories' : 'stubs';
+        $config = $this->read();
+
+        return $config[$key];
+    }
+
+    /**
+     * Check if artisan command already is in the tallify configuration file.
+     *
+     * @param string $command
+     *
+     * @return boolean
+     */
+    public function checkIfArtisanCommandIsInConfigurationFile($command, $postUpdate)
+    {
+        $key = $postUpdate ? 'post-update-cmd' : 'artisan-commands';
+
+        $config = $this->read();
+
+        return in_array($command, $config[$key]);
+    }
+
+    /**
+     * Add an artisan command to the default Tallify configuration file.
+     *
+     * @param string $command
+     *
+     * @return void
+     */
+    public function addArtisanCommand($command, $postUpdate)
+    {
+        $key = $postUpdate ? 'post-update-cmd' : 'artisan-commands';
+
+        $config = $this->read();
+
+        array_push($config[$key], $command);
+
+        $this->write($config);
+    }
+
+    /**
+     * Remove an artisan command to the default Tallify configuration file.
+     *
+     * @param string $command
+     *
+     * @return void
+     */
+    public function removeArtisanCommand($command, $postUpdate)
+    {
+        $key = $postUpdate ? 'post-update-cmd' : 'artisan-commands';
+
+        $config = $this->read();
+
+        array_splice($config[$key], array_search($command, $config[$key]), 1);
+
+        $this->write($config);
+    }
+
+    /**
+     * Displays all artisan commands from the Tallify configuration file.
+     *
+     * @return array
+     */
+    public function displayDefaultArtisanCommands($postUpdate)
+    {
+        $key = $postUpdate ? 'post-update-cmd' : 'artisan-commands';
+        $config = $this->read();
+
+        return $config[$key];
+    }
+
+    /**
+     * Check if environment variable already is in the add-to-dot-env tallify configuration file.
+     *
+     * @param string $env
+     *
+     * @return boolean
+     */
+    public function checkIfVariableIsInConfigurationFile($env)
+    {
+        $key = 'add-to-dot-env';
+
+        $config = $this->read();
+
+        return in_array($env, $config[$key]);
+    }
+
+    /**
+     * Add an environment variable to the add-to-dot-env Tallify configuration file.
+     *
+     * @param string $envVariable
+     *
+     * @return void
+     */
+    public function addEnvVariable($envVariable)
+    {
+        $key = 'add-to-dot-env';
+
+        $config = $this->read();
+
+        array_push($config[$key], $envVariable);
+
+        $this->write($config);
+    }
+
+    /**
+     * Remove an environment variable to the add-to-dot-env Tallify configuration file.
+     *
+     * @param string $envVariable
+     *
+     * @return void
+     */
+    public function removeEnvVariable($envVariable)
+    {
+        $key = 'add-to-dot-env';
+
+        $config = $this->read();
+
+        array_splice($config[$key], array_search($envVariable, $config[$key]), 1);
+
+        $this->write($config);
+    }
+
+    /**
+     * Displays all environment variables from the add-to-dot-env Tallify configuration file.
+     *
+     * @return array
+     */
+    public function displayDefaultEnvironmentVariables()
+    {
+        $key = 'add-to-dot-env';
+
+        $config = $this->read();
+
+        return $config[$key];
+    }
+
+    /**
+     * Check if file already is in the add-to-gitignore tallify configuration file.
+     *
+     * @param string $filePath
+     *
+     * @return boolean
+     */
+    public function checkIfFileIsInConfigurationFile($filePath)
+    {
+        $key = 'add-to-gitignore';
+
+        $config = $this->read();
+
+        return in_array($filePath, $config[$key]);
+    }
+
+    /**
+     * Add file to the add-to-gitignore Tallify configuration file.
+     *
+     * @param string $filePath
+     *
+     * @return void
+     */
+    public function addFileToGitignore($filePath)
+    {
+        $key = 'add-to-gitignore';
+
+        $config = $this->read();
+
+        array_push($config[$key], $filePath);
+
+        $this->write($config);
+    }
+
+    /**
+     * Remove file to the add-to-gitignore Tallify configuration file.
+     *
+     * @param string $filePath
+     *
+     * @return void
+     */
+    public function removeFileFromGitignore($filePath)
+    {
+        $key = 'add-to-gitignore';
+
+        $config = $this->read();
+
+        array_splice($config[$key], array_search($filePath, $config[$key]), 1);
+
+        $this->write($config);
+    }
+
+    /**
+     * Displays all files from the add-to-gitignore Tallify configuration file.
+     *
+     * @return array
+     */
+    public function displayDefaultGitignoreFiles()
+    {
+        $key = 'add-to-gitignore';
+
         $config = $this->read();
 
         return $config[$key];

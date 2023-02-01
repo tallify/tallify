@@ -394,11 +394,38 @@ class Build
     }
 
     /**
+     * Add post update artisan command from the Tallify configuration file.
+     *
+     * @param string $projectName
+     *
+     * @return void
+     *
+     */
+    public function addPostUpdateArtisanCommands($projectName)
+    {
+        $artisanComands = $this->config->read()['post-update-cmd'];
+        $projectPath = $this->getProjectPath($projectName);
+
+        $search = '"post-update-cmd": [';
+        $replace = "\"post-update-cmd\": [";
+
+        foreach ($artisanComands as $command) {
+            $replace .= "\n            \"$command\",";
+        }
+
+        $this->files->replaceInFile(
+            $search,
+            $replace,
+            "$projectPath/composer.json",
+        );
+    }
+
+    /**
      * Run post composer install/update artisan command from the Tallify configuration file.
      *
      * @param string $projectName
      *
-     * @return Command
+     * @return void
      *
      */
     public function runArtisanCommands($projectName)
@@ -468,5 +495,74 @@ class Build
         }
 
         return $str;
+    }
+
+    /**
+     * Add files to gitignore.
+     *
+     * @return void
+     */
+    public function addFilesToGitignore($projectName)
+    {
+        $projectPath = $this->getProjectPath($projectName);
+        $gitignorFiles = $this->config->read()["add-to-gitignore"];
+        $gitignorePath = "$projectPath/.gitignore";
+
+        foreach ($gitignorFiles as $files) {
+            $this->files->addInFile($files, $gitignorePath);
+        }
+    }
+
+    /**
+     * Add files to .env.
+     *
+     * @return void
+     */
+    public function addFilesToDotEnv($projectName)
+    {
+        $projectPath = $this->getProjectPath($projectName);
+        $gitignorFiles = $this->config->read()["add-to-dot-env"];
+        $gitignorePath = "$projectPath/.env";
+
+        foreach ($gitignorFiles as $files) {
+            $this->files->addInFile($files, $gitignorePath);
+        }
+    }
+
+    /**
+     * Secure app URL for HTTPS
+     *
+     * @return void
+     */
+    public function secureAppUrlInDotEnv($projectName)
+    {
+        $projectPath = $this->getProjectPath($projectName);
+        $file = "$projectPath/.env";
+
+        $search = 'APP_URL=http';
+        $replace = "APP_URL=https";
+
+        $this->files->replaceInFile(
+            $search,
+            $replace,
+            $file,
+        );
+    }
+
+    /**
+     * Valet secure Laravel Project.
+     *
+     * @param string $projectName
+     *
+     * @return void
+     *
+     */
+    public function valetSecure($projectName)
+    {
+        $commands = [
+            "valet secure $projectName",
+        ];
+
+        Command::runCommands($commands);
     }
 }

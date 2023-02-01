@@ -19,7 +19,7 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 /**
  * Create the application.
  */
-$version = '0.1.18';
+$version = '0.1.19';
 
 $app = new Application('Tallify installer', $version);
 
@@ -27,12 +27,16 @@ $app = new Application('Tallify installer', $version);
  * Install Tallify and any required services.
  */
 $app->command('install', function () {
+    sleep(1);
+
     Configuration::install();
 
     Output::italicSingle(
         "Tallify was successfully installed.",
         'success'
     );
+
+    sleep(1);
 
     return Output::italicSingle(
         "Please, go to the folder where you keep all of your Laravel projects and use the <span class='px-1 font-bold text-white bg-gray-800'>tallify park</span> command.",
@@ -59,6 +63,8 @@ if (is_dir(TALLIFY_HOME_PATH)) {
         }
 
         Configuration::uninstall();
+
+        sleep(1);
 
         return Output::italicSingle(
             "Tallify was successfully installed.",
@@ -139,6 +145,27 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     ]);
 
     /**
+     * Returns the path to the custom tallify configuration files.
+     */
+    $app->command('published', function () {
+        $publishedPath = Configuration::getPublishedPath();
+
+        if (empty($publishedPath)) {
+            $path = TALLIFY_HOME_PATH;
+
+            return Output::italicSingle(
+                "<span class='font-bold underline'>$path</span> is where your tallify configuration file lives.",
+                'info',
+            );
+        }
+
+        return Output::italicSingle(
+            "<span class='font-bold underline'>$publishedPath</span> is where your custom tallify configuration file lives.",
+            'info',
+        );
+    })->descriptions('Shows the directory where your custom tallify configuration file lives.');
+
+    /**
      * Reset Tallify configuration files to their default state.
      */
     $app->command('config:reset', function (InputInterface $input, OutputInterface $output) {
@@ -163,7 +190,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     /**
      * Add a composer or npm package to the list of default packages you want to uninstall from the default Laravel application.
      */
-    $app->command('config:add package-name [--composer] [--npm] [--dev]', function (
+    $app->command('detach:add package-name [--composer] [--npm] [--dev]', function (
         $packageName,
         $composer = null,
         $npm = null,
@@ -201,7 +228,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     /**
      * List all packages to remove from the default Laravel application.
      */
-    $app->command('config:remove package-name [--composer] [--npm] [--dev]', function (
+    $app->command('detach:remove package-name [--composer] [--npm] [--dev]', function (
         $packageName,
         $composer = null,
         $npm = null,
@@ -239,7 +266,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     /**
      * List all default packages to add to the Laravel default application.
      */
-    $app->command('config:list [--composer] [--npm] [--dev]', function (
+    $app->command('detach:list [--composer] [--npm] [--dev]', function (
         $composer = null,
         $npm = null,
         $dev = null,
@@ -269,7 +296,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
         }
 
         return Output::singleNoLevel($string);
-    })->descriptions('List all packages.', [
+    })->descriptions('List all packages you want to remove from the default Laravel Application.', [
         '--composer'        => 'List all composer packages to be removed from the Laravel default composer packages.',
         '--npm'             => 'List all npm packages to be removed from the Laravel default npm packages.',
         '--dev'             => 'List all composer development packages to be removed from the Laravel default composer development packages.',
@@ -392,7 +419,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
         }
 
         return Output::singleNoLevel($string);
-    })->descriptions('List all packages.', [
+    })->descriptions('List all packages you want to add to the default Laravel Application packages.', [
         '--composer'        => 'List all composer default packages.',
         '--npm'             => 'List all npm default packages.',
         '--dev'             => 'List all composer --dev default packages.',
@@ -439,7 +466,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
         Configuration::removeStub($stubName, $directory);
 
         return Output::italicSingle(
-            "$stubName has been successfully removed to your default stubs.",
+            "$stubName has been successfully removed from your default stubs.",
             'success',
         );
     })->descriptions('Remove custom stubs to your tallify configuration file.', [
@@ -450,7 +477,7 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     /**
      * List all default stubs.
      */
-    $app->command('stubs:list [--directory]', function ($directory) {
+    $app->command('stub:list [--directory]', function ($directory) {
         $stubs = Configuration::displayDefaultStubs($directory);
 
         if (empty($stubs)) {
@@ -470,6 +497,203 @@ if (is_dir(TALLIFY_HOME_PATH)) {
     })->descriptions('List all stubs.', [
         "--directory" => "List all default stubs directories."
     ]);
+
+    /**
+     * Add an artisan command to the list of default artisan commands to run post install.
+     */
+    $app->command('command:add command-name [--post-update]', function ($commandName, $postUpdate = null) {
+        if (Configuration::checkIfArtisanCommandIsInConfigurationFile($commandName, $postUpdate)) {
+            return Output::italicSingle(
+                "'$commandName' already is in your tallify configuration file.",
+                'warning',
+            );
+        }
+
+        Configuration::addArtisanCommand($commandName, $postUpdate);
+
+        return Output::italicSingle(
+            "'$commandName' has been successfully added to your default artisan commands to run post install/update.",
+            'success',
+        );
+    })->descriptions('Add custom artisan command to run post install to your tallify configuration file.', [
+        'command-name'           => 'Command to be added to the list of artisan commands to run post install.',
+        '--post-update'     => 'Option to tell Tallify that the command is a post-update-cmd artisan command.',
+    ]);
+
+    /**
+     * Remove an artisan command to the list of default artisan commands to run post install.
+     */
+    $app->command('command:remove command-name [--post-update]', function ($commandName, $postUpdate = null) {
+        if (!Configuration::checkIfArtisanCommandIsInConfigurationFile($commandName, $postUpdate)) {
+            return Output::italicSingle(
+                "It looks like '$commandName' was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
+                'warning',
+            );
+        }
+
+        Configuration::removeArtisanCommand($commandName, $postUpdate);
+
+        return Output::italicSingle(
+            "'$commandName' has been successfully removed from your default artisan commands to run post install/update.",
+            'success',
+        );
+    })->descriptions('Remove custom artisan command to run post install to your tallify configuration file.', [
+        'command-name'       => 'Command to be removed from the list of artisan commands to run post install.',
+        '--post-update'     => 'Option to tell Tallify that the command is a post-update-cmd artisan command.',
+    ]);
+
+    /**
+     * List all artisan commands from the Tallify configuration file.
+     */
+    $app->command('command:list [--post-update]', function ($postUpdate = null) {
+        $commands = Configuration::displayDefaultArtisanCommands($postUpdate);
+
+        if (empty($commands)) {
+            return Output::italicSingle(
+                "It seems like you have no default post install/update artisan commands.",
+                'warning',
+            );
+        }
+
+        $string = "<div class='font-bold underline'>Your post install/update commands:</div>";
+
+        foreach ($commands as $index => $command) {
+            $string .= "<div class='font-bold text-lime-500'><span class='text-sky-500'>'" . $index . "'</span><span class='px-1 text-orange-500'>=></span>'" . $command . "'</div>";
+        }
+
+        return Output::singleNoLevel($string);
+    })->descriptions('List all post install/update artisan commands from the Tallify configuration file.', [
+        '--post-update'     => 'Option to list all post-update-cmd artisan command.',
+    ]);
+
+    /**
+     * Add an environment variable to the .env file
+     */
+    $app->command('env:add env-variable', function ($envVariable) {
+        if (Configuration::checkIfVariableIsInConfigurationFile($envVariable)) {
+            return Output::italicSingle(
+                "$envVariable already is in your tallify configuration file.",
+                'warning',
+            );
+        }
+
+        Configuration::addEnvVariable($envVariable);
+
+        return Output::italicSingle(
+            "$envVariable has been successfully added to the list of files you want to add to the .env file.",
+            'success',
+        );
+    })->descriptions('Add custom files to your env file.', [
+        'env-variable'           => 'Environment variable you want to add to your .env file',
+    ]);
+
+    /**
+     * Remove an environment variable to the .env file
+     */
+    $app->command('env:remove env-variable', function ($envVariable) {
+        if (!Configuration::checkIfVariableIsInConfigurationFile($envVariable)) {
+            return Output::italicSingle(
+                "It looks like $envVariable was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
+                'warning',
+            );
+        }
+
+        Configuration::removeEnvVariable($envVariable);
+
+        return Output::italicSingle(
+            "$envVariable has been successfully removed from the list of environment variables you want to add to the .env file.",
+            'success',
+        );
+    })->descriptions('Remove an environment variable from your tallify configuration file.', [
+        'env-variable'       => 'Environment variable you want to remove from the environment variable list in your .env file',
+    ]);
+
+    /**
+     * List all environment variables from the Tallify configuration file.
+     */
+    $app->command('env:list', function () {
+        $variables = Configuration::displayDefaultEnvironmentVariables();
+
+        if (empty($variables)) {
+            return Output::italicSingle(
+                "It seems like you have no default environment variables.",
+                'warning',
+            );
+        }
+
+        $string = "<div class='font-bold underline'>Your environment variables to add to the .env file:</div>";
+
+        foreach ($variables as $index => $variable) {
+            $string .= "<div class='font-bold text-lime-500'><span class='text-sky-500'>'" . $index . "'</span><span class='px-1 text-orange-500'>=></span>'" . $variable . "'</div>";
+        }
+
+        return Output::singleNoLevel($string);
+    })->descriptions('List all environment variables from the Tallify configuration file.');
+
+    /**
+     * Add an file to the .gitignore file
+     */
+    $app->command('gitignore:add file-path', function ($filePath) {
+        if (Configuration::checkIfFileIsInConfigurationFile($filePath)) {
+            return Output::italicSingle(
+                "$filePath already is in your tallify configuration file.",
+                'warning',
+            );
+        }
+
+        Configuration::addFileToGitignore($filePath);
+
+        return Output::italicSingle(
+            "$filePath has been successfully added to the list of files you want to add to the .gitignore file.",
+            'success',
+        );
+    })->descriptions('Add custom files to your .gitignore file.', [
+        'file-path'           => 'Path of the file you want to add to your .gitignore file',
+    ]);
+
+    /**
+     * Remove a file from the .gitignore file
+     */
+    $app->command('gitignore:remove file-path', function ($filePath) {
+        if (!Configuration::checkIfFileIsInConfigurationFile($filePath)) {
+            return Output::italicSingle(
+                "It looks like $filePath was <span class='font-bold underline'>NOT</span> in your tallify configuration file.",
+                'warning',
+            );
+        }
+
+        Configuration::removeFileFromGitignore($filePath);
+
+        return Output::italicSingle(
+            "$filePath has been successfully removed from the list of files you want to add to the .gitignore file.",
+            'success',
+        );
+    })->descriptions('Remove file from the list of files you want to add to the .gitignore file.', [
+        'file-path'       => 'File path you want to remove from the files you want to add in the .gitignore file',
+    ]);
+
+    /**
+     * List all .env files from the Tallify configuration file.
+     */
+    $app->command('gitignore:list', function () {
+        $variables = Configuration::displayDefaultGitignoreFiles();
+
+        if (empty($variables)) {
+            return Output::italicSingle(
+                "It seems like you have no default .gitignore files.",
+                'warning',
+            );
+        }
+
+        $string = "<div class='font-bold underline'>Your files to add to the .gitignore file:</div>";
+
+        foreach ($variables as $index => $variable) {
+            $string .= "<div class='font-bold text-lime-500'><span class='text-sky-500'>'" . $index . "'</span><span class='px-1 text-orange-500'>=></span>'" . $variable . "'</div>";
+        }
+
+        return Output::singleNoLevel($string);
+    })->descriptions('List all the .env files from the Tallify configuration file.');
+
 
 
 
@@ -519,17 +743,31 @@ if (is_dir(TALLIFY_HOME_PATH)) {
             // copy all stubs
             Build::copyStubsToLaravelProject($projectName);
 
+            // add post-update-cmd
+            Build::addPostUpdateArtisanCommands($projectName);
+
             // install packages
             Build::installComposerPackages($projectName);
-            Build::uninstallComposerPackages($projectName);
             Build::installComposerDevelopmentPackages($projectName);
+            Build::uninstallComposerPackages($projectName);
             Build::uninstallComposerDevelopmentPackages($projectName);
             Build::addNpmPackages($projectName);
             Build::removeNpmPackages($projectName);
+
+            // run artisan commands
             Build::runArtisanCommands($projectName);
 
-            // add files to git ignore
+            // secure application
+            Build::secureAppUrlInDotEnv($projectName);
 
+            // add environment variables to .env
+            Build::addFilesToDotEnv($projectName);
+
+            // add files to git ignore
+            Build::addFilesToGitignore($projectName);
+
+            // valet secure
+            Build::valetSecure($projectName);
         })->descriptions('Tallify a given Laravel application.', [
             'project-name' => 'Tell Tallify what Laravel project you would like to "tallify"',
             '--force' => 'Force the "tallification" of a already "tallified" Laravel project',
