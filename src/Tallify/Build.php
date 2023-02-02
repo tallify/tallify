@@ -53,6 +53,26 @@ class Build
     }
 
     /**
+     * Check if all the files in the Tallify configuration file exists
+     * @param string $key
+     *
+     * @return boolean
+     */
+    public function checkIfInStubsDirectory($key)
+    {
+        $config = $this->config->read();
+        $defaultStubs = array_keys($config[$key]);
+
+        $stubsToCheckAgainst = $key == 'stubs' ? $this->getFilesFromStubDirectory() : $this->getFoldersFromStubDirectory();
+
+        $results = collect($defaultStubs)->filter(function ($stub) use ($stubsToCheckAgainst) {
+            return !in_array($stub, $stubsToCheckAgainst);
+        })->all();
+
+        return count($results) === 0;
+    }
+
+    /**
      * Get the relevant stubs directory path
      * @param array $config
      *
@@ -94,26 +114,6 @@ class Build
         return collect($files)->filter(function ($file) use ($stubPath) {
             return is_dir("$stubPath/$file");
         })->all();
-    }
-
-    /**
-     * Check if all the files in the Tallify configuration file exists
-     * @param string $key
-     *
-     * @return boolean
-     */
-    public function checkIfInStubsDirectory($key)
-    {
-        $config = $this->config->read();
-        $defaultStubs = array_keys($config[$key]);
-
-        $stubsToCheckAgainst = $key == 'stubs' ? $this->getFilesFromStubDirectory() : $this->getFoldersFromStubDirectory();
-
-        $results = collect($defaultStubs)->filter(function ($stub) use ($stubsToCheckAgainst) {
-            return !in_array($stub, $stubsToCheckAgainst);
-        })->all();
-
-        return count($results) === 0;
     }
 
     /**
@@ -180,7 +180,7 @@ class Build
      */
     public function askUserPermissionToOverride($that, InputInterface $input, OutputInterface $output)
     {
-        $question = 'Tallify files already exists. Would you like to override them? [y/N]';
+        $question = 'Some files already exists. Would you like to override them? [y/N]';
         $answer = Question::confirm($question, $that, $input, $output);
 
         return $answer;
