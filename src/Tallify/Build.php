@@ -259,7 +259,7 @@ class Build
 
         $commands = count($composerPackages) > 0 ? [
             "cd $projectPath",
-            "sudo -u " . user() . " $composer require $packages",
+            "sudo -u " . user() . " $composer require $packages --with-all-dependencies",
             "cd $originPath",
         ] : [];
 
@@ -284,7 +284,7 @@ class Build
 
         $commands = count($composerPackages) > 0 ? [
             "cd $projectPath",
-            "sudo -u " . user() . " $composer require --dev $packages",
+            "sudo -u " . user() . " $composer require $packages --dev --with-all-dependencies",
             "cd $originPath",
         ] : [];
 
